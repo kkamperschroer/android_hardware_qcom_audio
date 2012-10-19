@@ -3,7 +3,9 @@
 # Copyright 2008 Wind River Systems
 #
 
+$(warning here5)
 ifeq ($(BOARD_USES_ALSA_AUDIO),true)
+$(warning here6)
 
 LOCAL_PATH := $(call my-dir)
 
@@ -13,10 +15,14 @@ include $(CLEAR_VARS)
 $(shell mkdir -p $(OUT)/obj/SHARED_LIBRARIES/libacdbloader_intermediates)
 $(shell touch $(OUT)/obj/SHARED_LIBRARIES/libacdbloader_intermediates/export_includes)
 
+$(warning here7)
+
 LOCAL_ARM_MODE := arm
 LOCAL_CFLAGS := -D_POSIX_SOURCE
 LOCAL_CFLAGS += -DQCOM_ACDB_ENABLED
 LOCAL_CFLAGS += -DQCOM_PROXY_DEVICE_ENABLED
+
+$(warning here8)
 
 LOCAL_SRC_FILES := \
   AudioHardwareALSA.cpp 	\
@@ -136,8 +142,12 @@ ifeq ($(BOARD_HAVE_HTC_AUDIO),true)
   LOCAL_CFLAGS += -DHTC_AUDIO
 endif
 
+LOCAL_CFLAGS += -DKYLEK_DEBUG_FLAG
 ifeq ($(BOARD_HAVE_SAMSUNG_AUDIO),true)
   LOCAL_CFLAGS += -DSAMSUNG_AUDIO
+  LOCAL_CFLAGS += -DQCOM_USBAUDIO_ENABLED
+  LOCAL_CFLAGS += -DKYLEK_DEBUG_FLAG2
+  $(warning here9)
 endif
 
 ifeq ($(BOARD_HAVE_AUDIENCE_A2220),true)
