@@ -1392,7 +1392,7 @@ char *getUCMDevice(uint32_t devices, int input, char *rxDevice)
              }
         }else if ((devices & AudioSystem::DEVICE_OUT_ANLG_DOCK_HEADSET) ||
                   (devices & AudioSystem::DEVICE_OUT_DGTL_DOCK_HEADSET)) {
-             return strdup(SND_USE_CASE_DEV_PROXY_RX); /* PROXY RX */
+             return strdup(SND_USE_CASE_DEV_DOCK); /* DOCK RX */
         } else if ((devices & AudioSystem::DEVICE_OUT_SPEAKER) &&
             ((devices & AudioSystem::DEVICE_OUT_WIRED_HEADSET) ||
             (devices & AudioSystem::DEVICE_OUT_WIRED_HEADPHONE))) {
