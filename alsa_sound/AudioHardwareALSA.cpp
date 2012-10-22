@@ -16,6 +16,8 @@
  ** limitations under the License.
  */
 
+#define LOG_NDEBUG 0
+
 #include <errno.h>
 #include <stdarg.h>
 #include <sys/stat.h>
@@ -553,6 +555,7 @@ void AudioHardwareALSA::startUsbRecordingIfNotStarted(){
 
 void AudioHardwareALSA::doRouting(int device)
 {
+    ALOGE("in doRouting for device %d", device);
     Mutex::Autolock autoLock(mLock);
     int newMode = mode();
     bool isRouted = false;
@@ -565,12 +568,12 @@ void AudioHardwareALSA::doRouting(int device)
 #endif
         || (device == AudioSystem::DEVICE_IN_COMMUNICATION)
         ) {
-        ALOGV("Ignoring routing for FM/INCALL/VOIP recording");
+        ALOGE("Ignoring routing for FM/INCALL/VOIP recording");
         return;
     }
     if (device == 0)
         device = mCurDevice;
-    ALOGV("doRouting: device %d newMode %d mCSCallActive %d mVolteCallActive %d"
+    ALOGE("doRouting: device %d newMode %d mCSCallActive %d mVolteCallActive %d"
          "mIsFmActive %d", device, newMode, mCSCallActive, mVolteCallActive,
          mIsFmActive);
 
@@ -579,6 +582,7 @@ void AudioHardwareALSA::doRouting(int device)
 
     if(!isRouted) {
 #ifdef QCOM_USBAUDIO_ENABLED
+        ALOGE("QCOM_USBAUDIO IS ENABLED!");
         if(!(device & AudioSystem::DEVICE_OUT_ANLG_DOCK_HEADSET) &&
             !(device & AudioSystem::DEVICE_OUT_DGTL_DOCK_HEADSET) &&
             !(device & AudioSystem::DEVICE_IN_ANLG_DOCK_HEADSET) &&
@@ -604,13 +608,13 @@ void AudioHardwareALSA::doRouting(int device)
                     for(it = mDeviceList.begin(); it != mDeviceList.end(); ++it) {
                          if((!strcmp(it->useCase, SND_USE_CASE_VERB_HIFI_LOW_POWER)) ||
                             (!strcmp(it->useCase, SND_USE_CASE_MOD_PLAY_LPA))) {
-                                 ALOGD("doRouting: LPA device switch to proxy");
+                                 ALOGE("doRouting: LPA device switch to proxy");
                                  startUsbPlaybackIfNotStarted();
                                  musbPlaybackState |= USBPLAYBACKBIT_LPA;
                                  break;
                          } else if((!strcmp(it->useCase, SND_USE_CASE_VERB_VOICECALL)) ||
                                    (!strcmp(it->useCase, SND_USE_CASE_MOD_PLAY_VOICE))) {
-                                    ALOGD("doRouting: VOICE device switch to proxy");
+                                    ALOGE("doRouting: VOICE device switch to proxy");
                                     startUsbRecordingIfNotStarted();
                                     startUsbPlaybackIfNotStarted();
                                     musbPlaybackState |= USBPLAYBACKBIT_VOICECALL;
@@ -618,10 +622,12 @@ void AudioHardwareALSA::doRouting(int device)
                                     break;
                         }else if((!strcmp(it->useCase, SND_USE_CASE_VERB_DIGITAL_RADIO)) ||
                                  (!strcmp(it->useCase, SND_USE_CASE_MOD_PLAY_FM))) {
-                                    ALOGD("doRouting: FM device switch to proxy");
+                                    ALOGE("doRouting: FM device switch to proxy");
                                     startUsbPlaybackIfNotStarted();
                                     musbPlaybackState |= USBPLAYBACKBIT_FM;
                                     break;
+                         }else{
+                             ALOGE("doRouting: Ended up in else around line 629");
                          }
                     }
         } else 
@@ -636,6 +642,7 @@ void AudioHardwareALSA::doRouting(int device)
                   (device & AudioSystem::DEVICE_OUT_SPEAKER) &&
                   ((mCurDevice & AudioSystem::DEVICE_OUT_WIRED_HEADSET) ||
                   (mCurDevice & AudioSystem::DEVICE_OUT_WIRED_HEADPHONE)))) {
+            ALOGE("doRouting: Ended up in the else if at line 642");
                         for(ALSAHandleList::iterator it = mDeviceList.begin();
                              it != mDeviceList.end(); ++it) {
                              if((!strncmp(it->useCase, SND_USE_CASE_VERB_HIFI,
@@ -647,6 +654,7 @@ void AudioHardwareALSA::doRouting(int device)
                               }
                          }
         } else {
+            ALOGE("doRouting: Ended up in the else at line 653");
              setInChannels(device);
              ALSAHandleList::iterator it = mDeviceList.end();
              it--;
